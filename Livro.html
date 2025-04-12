@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>📚 Meus Livros Lidos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(to right, #f0f4f8, #e0ecf4);
+      color: #333;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2rem;
+      color: #1f3b4d;
+      margin-bottom: 30px;
+    }
+
+    form {
+      background: white;
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      max-width: 500px;
+      margin: auto;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 14px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 1em;
+    }
+
+    button {
+      width: 100%;
+      background: linear-gradient(to right, #6cb2eb, #4a90e2);
+      color: white;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1em;
+      cursor: pointer;
+      font-weight: 600;
+      margin-top: 10px;
+    }
+
+    .livros {
+      margin-top: 40px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 20px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .livro-card {
+      background: white;
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      overflow: hidden;
+      word-wrap: break-word;
+      height: 350px;
+      justify-content: space-between;
+    }
+
+    .livro-card img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+
+    .livro-info {
+      width: 100%;
+    }
+
+    .livro-info h3 {
+      margin: 0 0 6px;
+      font-size: 1rem;
+      color: #1f3b4d;
+      word-wrap: break-word;
+    }
+
+    .livro-info p {
+      margin: 4px 0;
+      font-size: 0.85em;
+      color: #555;
+      word-wrap: break-word;
+    }
+
+    .remover-btn {
+      display: inline-block;
+      background: #ff5c5c;
+      color: white;
+      padding: 6px 12px;
+      font-size: 0.9em;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .remover-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .livro-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+    }
+
+    .livro-container .remover-btn {
+      align-self: flex-end;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 500px) {
+      .livros {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>📖 Meus Livros Lidos</h1>
+
+  <form id="formLivro">
+    <input type="text" id="titulo" placeholder="Título do Livro" required />
+    <input type="text" id="autor" placeholder="Autor" required />
+    <textarea id="descricao" placeholder="Escreva sobre o livro..." rows="3" required></textarea>
+    <input type="file" id="foto" accept="image/*" required />
+    <button type="submit">Adicionar Livro</button>
+  </form>
+
+  <div class="livros" id="listaLivros"></div>
+
+  <script>
+    const form = document.getElementById('formLivro');
+    const listaLivros = document.getElementById('listaLivros');
+    let livros = JSON.parse(localStorage.getItem('livros')) || [];
+
+    function atualizarLocalStorage() {
+      localStorage.setItem('livros', JSON.stringify(livros));
+    }
+
+    function criarCardLivro(livro, index) {
+      const card = document.createElement('div');
+      card.className = 'livro-card';
+      const container = document.createElement('div');
+      container.className = 'livro-container';
+
+      const removerBtn = document.createElement('button');
+      removerBtn.className = 'remover-btn';
+      removerBtn.textContent = 'Remover';
+      removerBtn.onclick = () => removerLivro(index);
+
+      container.innerHTML = `
+        <img src="${livro.imagem}" alt="Capa do livro" />
+        <div class="livro-info">
+          <h3>${livro.titulo}</h3>
+          <p><strong>${livro.autor}</strong></p>
+          <p>${livro.descricao}</p>
+        </div>
+      `;
+
+      container.appendChild(removerBtn);
+      card.appendChild(container);
+      listaLivros.appendChild(card);
+    }
+
+    function renderizarTodos() {
+      listaLivros.innerHTML = '';
+      livros.forEach((livro, index) => criarCardLivro(livro, index));
+    }
+
+    function removerLivro(index) {
+      if (confirm("Deseja realmente remover este livro?")) {
+        livros.splice(index, 1);
+        atualizarLocalStorage();
+        renderizarTodos();
+      }
+    }
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const titulo = document.getElementById('titulo').value;
+      const autor = document.getElementById('autor').value;
+      const descricao = document.getElementById('descricao').value;
+      const fotoInput = document.getElementById('foto');
+
+      if (fotoInput.files && fotoInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          const imgSrc = event.target.result;
+
+          const livro = { titulo, autor, descricao, imagem: imgSrc };
+          livros.push(livro);
+          atualizarLocalStorage();
+          renderizarTodos();
+          form.reset();
+        };
+        reader.readAsDataURL(fotoInput.files[0]);
+      }
+    });
+
+    renderizarTodos();
+  </script>
+
+</body>
+</html>
