@@ -16,11 +16,27 @@
       color: #333;
     }
 
-    h1 {
+    .header {
       text-align: center;
+      margin-bottom: 30px;
+    }
+
+    h1 {
       font-size: 2rem;
       color: #1f3b4d;
-      margin-bottom: 30px;
+      margin: 0;
+    }
+
+    #contador {
+      font-weight: 600;
+      font-size: 1.2rem;
+      color: #1f3b4d;
+      background: #ffffffcc;
+      padding: 10px 20px;
+      border-radius: 12px;
+      display: inline-block;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+      margin-top: 10px;
     }
 
     form {
@@ -145,7 +161,10 @@
 </head>
 <body>
 
-  <h1>📖 Meus Livros Lidos</h1>
+  <div class="header">
+    <h1>📖 Meus Livros Lidos</h1>
+    <p id="contador">📚 Total de livros: 0</p>
+  </div>
 
   <form id="formLivro">
     <input type="text" id="titulo" placeholder="Título do Livro" required />
@@ -160,10 +179,16 @@
   <script>
     const form = document.getElementById('formLivro');
     const listaLivros = document.getElementById('listaLivros');
+    const contador = document.getElementById('contador');
     let livros = JSON.parse(localStorage.getItem('livros')) || [];
+
+    function atualizarContador() {
+      contador.textContent = `📚 Total de livros: ${livros.length}`;
+    }
 
     function atualizarLocalStorage() {
       localStorage.setItem('livros', JSON.stringify(livros));
+      atualizarContador();
     }
 
     function criarCardLivro(livro, index) {
@@ -194,6 +219,7 @@
     function renderizarTodos() {
       listaLivros.innerHTML = '';
       livros.forEach((livro, index) => criarCardLivro(livro, index));
+      atualizarContador();
     }
 
     function removerLivro(index) {
