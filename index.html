@@ -176,12 +176,27 @@
 
   <div class="livros" id="listaLivros"></div>
 
+  <form id="formAlarme" style="margin-top: 30px;">
+    <label for="hora">Hora do Alarme:</label>
+    <input type="time" id="hora" required />
+    <button type="submit">Definir Alarme</button>
+  </form>
+
+  <button id="editarAlarme" style="display: none;">Alterar Alarme</button>
+  <p id="contadorAlarme">Alarme: Nenhum</p>
+
   <script>
-    const form = document.getElementById('formLivro');
+    const formLivro = document.getElementById('formLivro');
     const listaLivros = document.getElementById('listaLivros');
     const contador = document.getElementById('contador');
-    let livros = JSON.parse(localStorage.getItem('livros')) || [];
+    const contadorAlarme = document.getElementById('contadorAlarme');
+    const editarAlarmeBtn = document.getElementById('editarAlarme');
+    const formAlarme = document.getElementById('formAlarme');
 
+    let livros = JSON.parse(localStorage.getItem('livros')) || [];
+    let alarme = localStorage.getItem('alarme') || null;
+
+    // Funções de livros
     function atualizarContador() {
       contador.textContent = `📚 Total de livros: ${livros.length}`;
     }
@@ -230,7 +245,7 @@
       }
     }
 
-    form.addEventListener('submit', function(e) {
+    formLivro.addEventListener('submit', function(e) {
       e.preventDefault();
 
       const titulo = document.getElementById('titulo').value;
@@ -247,13 +262,62 @@
           livros.push(livro);
           atualizarLocalStorage();
           renderizarTodos();
-          form.reset();
+          formLivro.reset();
         };
         reader.readAsDataURL(fotoInput.files[0]);
       }
     });
 
+    // Funções de alarme
+    function atualizarAlarme() {
+      if (alarme) {
+        contadorAlarme.textContent = `Alarme definido para: ${alarme}`;
+        editarAlarmeBtn.style.display = 'inline-block';
+        configurarAlarme();
+      } else {
+        contadorAlarme.textContent = `Alarme: Nenhum`;
+        editarAlarmeBtn.style.display = 'none';
+      }
+    }
+
+    function configurarAlarme() {
+      const agora = new Date();
+      const [hora, minuto] = alarme.split(':');
+      const alarmeHora = new Date();
+      alarmeHora.setHours(hora, minuto, 0, 0);
+
+      const tempoRestante = alarmeHora.getTime() - agora.getTime();
+      if (tempoRestante > 0) {
+        setTimeout(tocarAlarme, tempoRestante);
+      }
+    }
+
+    function tocarAlarme() {
+      if (window.Audio) {
+        const audio = new Audio('https://www.soundjay.com/button/beep-07.wav');
+        audio.play();
+      }
+      alert("⏰ Alarme disparado! Hora de revisar seu conteúdo!");
+    }
+
+    formAlarme.addEventListener('submit', function(e) {
+      e.preventDefault();
+      alarme = document.getElementById('hora').value;
+      localStorage.setItem('alarme', alarme);
+      atualizarAlarme();
+    });
+
+    editarAlarmeBtn.addEventListener('click', function() {
+      const novoAlarme = prompt("Informe o novo horário do alarme (formato HH:mm):", alarme);
+      if (novoAlarme) {
+        alarme = novoAlarme;
+        localStorage.setItem('alarme', alarme);
+        atualizarAlarme();
+      }
+    });
+
     renderizarTodos();
+    atualizarAlarme();
   </script>
 
 </body>
