@@ -2,209 +2,258 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <title>Meus Livros Lidos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>📚 Meus Livros Lidos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    :root {
-      color-scheme: light dark;
-    }
+    * { box-sizing: border-box; }
 
     body {
-      font-family: system-ui, sans-serif;
+      font-family: 'Inter', sans-serif;
       margin: 0;
-      padding: 16px;
-      background-color: #f1f1f1;
-      color: #222;
+      padding: 20px;
+      background: linear-gradient(to right, #f0f4f8, #e0ecf4);
+      color: #333;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
     }
 
     h1 {
-      text-align: center;
-      font-size: 1.5rem;
-      margin-bottom: 20px;
+      font-size: 2rem;
+      color: #1f3b4d;
+      margin: 0;
     }
 
-    .form-container {
-      background: #fff;
-      padding: 16px;
-      border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      margin-bottom: 20px;
-    }
-
-    .form-container input,
-    .form-container textarea,
-    .form-container button {
-      width: 100%;
-      padding: 12px;
+    #contador {
+      font-weight: 600;
+      font-size: 1.2rem;
+      color: #1f3b4d;
+      background: #ffffffcc;
+      padding: 10px 20px;
+      border-radius: 12px;
+      display: inline-block;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
       margin-top: 10px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 1rem;
     }
 
-    .form-container input,
-    .form-container textarea {
-      background: #fff;
-      color: #000;
-    }
-
-    .form-container button {
-      background-color: #007bff;
-      color: white;
-      font-weight: bold;
-      border: none;
-    }
-
-    .books-scroll {
-      display: flex;
-      overflow-x: auto;
-      scroll-snap-type: x mandatory;
-      gap: 12px;
-      padding-bottom: 16px;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .book-card {
-      flex: 0 0 auto;
-      width: 220px;
+    form {
       background: white;
-      padding: 12px;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      scroll-snap-align: start;
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      max-width: 500px;
+      margin: auto;
     }
 
-    .book-card img {
+    input, textarea {
       width: 100%;
-      height: 180px;
-      object-fit: cover;
-      border-radius: 6px;
-      background: #eee;
+      padding: 14px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 1em;
     }
 
-    .book-info {
+    button {
+      width: 100%;
+      background: linear-gradient(to right, #6cb2eb, #4a90e2);
+      color: white;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1em;
+      cursor: pointer;
+      font-weight: 600;
       margin-top: 10px;
     }
 
-    .book-info h3 {
+    .livros {
+      margin-top: 40px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 20px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .livro-card {
+      background: white;
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      overflow: hidden;
+      word-wrap: break-word;
+      height: 350px;
+      justify-content: space-between;
+    }
+
+    .livro-card img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+
+    .livro-info {
+      width: 100%;
+    }
+
+    .livro-info h3 {
+      margin: 0 0 6px;
       font-size: 1rem;
-      margin: 5px 0;
-      color: #007bff;
+      color: #1f3b4d;
+      word-wrap: break-word;
     }
 
-    .book-info p {
-      font-size: 0.9rem;
-      color: #444;
+    .livro-info p {
+      margin: 4px 0;
+      font-size: 0.85em;
+      color: #555;
+      word-wrap: break-word;
     }
 
-    .delete-btn {
-      background: #e74c3c;
+    .remover-btn {
+      display: inline-block;
+      background: #ff5c5c;
       color: white;
       padding: 6px 12px;
-      border: none;
-      border-radius: 6px;
-      margin-top: 8px;
-      font-size: 0.9rem;
-      width: 100%;
+      font-size: 0.9em;
+      border-radius: 8px;
       cursor: pointer;
+      transition: transform 0.2s ease;
+      text-align: center;
+      margin-top: 10px;
     }
 
-    @media (prefers-color-scheme: dark) {
-      body {
-        background-color: #1e1e1e;
-        color: #eee;
-      }
+    .remover-btn:hover {
+      transform: scale(1.1);
+    }
 
-      .form-container,
-      .book-card {
-        background: #2c2c2c;
-        color: #eee;
-      }
+    .livro-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+    }
 
-      .form-container input,
-      .form-container textarea {
-        background: #444;
-        color: #fff;
+    .livro-container .remover-btn {
+      align-self: flex-end;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 500px) {
+      .livros {
+        grid-template-columns: 1fr;
       }
     }
   </style>
 </head>
 <body>
 
-  <h1>📖 Meus Livros Lidos</h1>
-
-  <div class="form-container">
-    <input type="text" id="title" placeholder="Título do Livro" autocorrect="off" autocomplete="off">
-    <input type="text" id="author" placeholder="Autor" autocorrect="off" autocomplete="off">
-    <input type="url" id="image" placeholder="URL da Capa" autocorrect="off" autocomplete="off">
-    <textarea id="description" rows="3" placeholder="Sobre o Livro" autocorrect="off"></textarea>
-    <button onclick="addBook()">Adicionar Livro</button>
+  <div class="header">
+    <h1>📖 Meus Livros Lidos</h1>
+    <p id="contador">📚 Total de livros: 0</p>
   </div>
 
-  <div class="books-scroll" id="booksContainer"></div>
+  <form id="formLivro">
+    <input type="text" id="titulo" placeholder="Título do Livro" required />
+    <input type="text" id="autor" placeholder="Autor" required />
+    <textarea id="descricao" placeholder="Escreva sobre o livro..." rows="3" required></textarea>
+    <input type="file" id="foto" accept="image/*" required />
+    <button type="submit">Adicionar Livro</button>
+  </form>
+
+  <div class="livros" id="listaLivros"></div>
 
   <script>
-    const booksKey = 'meusLivros';
+    const form = document.getElementById('formLivro');
+    const listaLivros = document.getElementById('listaLivros');
+    const contador = document.getElementById('contador');
+    let livros = JSON.parse(localStorage.getItem('livros')) || [];
 
-    function getBooks() {
-      return JSON.parse(localStorage.getItem(booksKey)) || [];
+    function atualizarContador() {
+      contador.textContent = `📚 Total de livros: ${livros.length}`;
     }
 
-    function saveBooks(books) {
-      localStorage.setItem(booksKey, JSON.stringify(books));
+    function atualizarLocalStorage() {
+      localStorage.setItem('livros', JSON.stringify(livros));
+      atualizarContador();
     }
 
-    function renderBooks() {
-      const books = getBooks();
-      const container = document.getElementById('booksContainer');
-      container.innerHTML = '';
+    function criarCardLivro(livro, index) {
+      const card = document.createElement('div');
+      card.className = 'livro-card';
+      const container = document.createElement('div');
+      container.className = 'livro-container';
 
-      books.forEach((book, index) => {
-        const card = document.createElement('div');
-        card.className = 'book-card';
-        card.innerHTML = `
-          <img src="${book.image}" alt="Capa de ${book.title}" onerror="this.src='https://via.placeholder.com/220x180?text=Sem+Imagem'">
-          <div class="book-info">
-            <h3>${book.title}</h3>
-            <p><strong>Autor:</strong> ${book.author}</p>
-            <p>${book.description}</p>
-            <button class="delete-btn" onclick="deleteBook(${index})">Excluir</button>
-          </div>
-        `;
-        container.appendChild(card);
-      });
+      const removerBtn = document.createElement('button');
+      removerBtn.className = 'remover-btn';
+      removerBtn.textContent = 'Remover';
+      removerBtn.onclick = () => removerLivro(index);
+
+      container.innerHTML = `
+        <img src="${livro.imagem}" alt="Capa do livro" />
+        <div class="livro-info">
+          <h3>${livro.titulo}</h3>
+          <p><strong>${livro.autor}</strong></p>
+          <p>${livro.descricao}</p>
+        </div>
+      `;
+
+      container.appendChild(removerBtn);
+      card.appendChild(container);
+      listaLivros.appendChild(card);
     }
 
-    function addBook() {
-      const title = document.getElementById('title').value.trim();
-      const author = document.getElementById('author').value.trim();
-      const image = document.getElementById('image').value.trim();
-      const description = document.getElementById('description').value.trim();
+    function renderizarTodos() {
+      listaLivros.innerHTML = '';
+      livros.forEach((livro, index) => criarCardLivro(livro, index));
+      atualizarContador();
+    }
 
-      if (!title || !author || !image || !description) {
-        alert("Preencha todos os campos.");
-        return;
+    function removerLivro(index) {
+      if (confirm("Deseja realmente remover este livro?")) {
+        livros.splice(index, 1);
+        atualizarLocalStorage();
+        renderizarTodos();
       }
-
-      const books = getBooks();
-      books.push({ title, author, image, description });
-      saveBooks(books);
-      renderBooks();
-
-      document.getElementById('title').value = '';
-      document.getElementById('author').value = '';
-      document.getElementById('image').value = '';
-      document.getElementById('description').value = '';
     }
 
-    function deleteBook(index) {
-      const books = getBooks();
-      books.splice(index, 1);
-      saveBooks(books);
-      renderBooks();
-    }
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
 
-    renderBooks();
+      const titulo = document.getElementById('titulo').value;
+      const autor = document.getElementById('autor').value;
+      const descricao = document.getElementById('descricao').value;
+      const fotoInput = document.getElementById('foto');
+
+      if (fotoInput.files && fotoInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          const imgSrc = event.target.result;
+
+          const livro = { titulo, autor, descricao, imagem: imgSrc };
+          livros.push(livro);
+          atualizarLocalStorage();
+          renderizarTodos();
+          form.reset();
+        };
+        reader.readAsDataURL(fotoInput.files[0]);
+      }
+    });
+
+    renderizarTodos();
   </script>
 
 </body>
